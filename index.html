@@ -1,0 +1,190 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0d1117">
+  <title>Voice Studio — Voice Playground</title>
+  <style>
+    :root{color-scheme:dark;--bg:#0d1117;--panel:#161b22;--panel2:#0f141b;--border:#30363d;--text:#e6edf3;--muted:#9198a1;--blue:#2f81f7;--green:#238636;--purple:#8957e5}
+    *{box-sizing:border-box}
+    body{margin:0;background:radial-gradient(ellipse at top,#17233b 0,#0d1117 48rem);font:15px/1.5 system-ui,-apple-system,Segoe UI,Roboto,sans-serif;color:var(--text);min-height:100vh}
+    .topbar{height:64px;border-bottom:1px solid var(--border);background:#0d1117eF;display:flex;align-items:center;justify-content:space-between;padding:0 max(18px,calc((100vw - 1050px)/2));gap:12px;position:sticky;top:0;z-index:5;backdrop-filter:blur(12px)}
+    .brand{display:flex;align-items:center;gap:10px;font-weight:750;letter-spacing:-.3px}
+    .logo{width:34px;height:34px;border-radius:10px;background:linear-gradient(135deg,#58a6ff,#8957e5);display:grid;place-items:center;box-shadow:0 5px 18px #8957e533}
+    .pill{border:1px solid var(--border);border-radius:999px;color:var(--muted);padding:5px 10px;font-size:12px}
+    main{width:min(100% - 32px,1000px);margin:38px auto 70px}
+    .hero{text-align:center;margin:0 auto 30px;max-width:700px}
+    .eyebrow{color:#79c0ff;text-transform:uppercase;font-size:11px;letter-spacing:2px;font-weight:750}
+    h1{font-size:clamp(32px,6vw,52px);line-height:1.08;letter-spacing:-1.8px;margin:12px 0}
+    .gradient{background:linear-gradient(90deg,#79c0ff,#d2a8ff);-webkit-background-clip:text;background-clip:text;color:transparent}
+    .hero p{color:var(--muted);font-size:16px;margin:0 auto;max-width:590px}
+    .layout{display:grid;grid-template-columns:1fr 300px;gap:18px;align-items:start}
+    .panel{background:linear-gradient(180deg,#161b22,#11161d);border:1px solid var(--border);border-radius:16px;overflow:hidden;box-shadow:0 12px 36px #0002}
+    .panelhead{padding:17px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:10px}
+    .panelhead h2{font-size:15px;margin:0;font-weight:700}
+    .panelbody{padding:20px}
+    label{display:block;font-weight:650;font-size:13px;margin-bottom:8px}
+    .hint{color:var(--muted);font-size:12px;font-weight:400}
+    textarea,input[type=text]{width:100%;background:#0d1117;border:1px solid var(--border);border-radius:10px;color:var(--text);padding:13px 14px;font:inherit;outline:none}
+    textarea{resize:vertical;min-height:170px}
+    textarea:focus,input:focus{border-color:var(--blue);box-shadow:0 0 0 3px #2f81f733}
+    .row{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:10px 0 16px}
+    .counter{color:var(--muted);font-size:12px}
+    .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:1px solid var(--border);border-radius:9px;padding:10px 14px;color:var(--text);background:#21262d;font:650 13px system-ui;cursor:pointer;text-decoration:none;transition:transform .12s,border-color .12s}
+    .btn:hover{border-color:#6e7681;transform:translateY(-1px)}
+    .btn.primary{background:var(--green);border-color:#2ea043;color:white}
+    .btn.blue{background:#1f6feb;border-color:#388bfd;color:white}
+    .btn:disabled{opacity:.45;cursor:not-allowed;transform:none}
+    .actions{display:flex;gap:10px;flex-wrap:wrap}
+    .drop{display:block;border:1px dashed #484f58;border-radius:12px;padding:16px;background:#0d1117;text-align:center;cursor:pointer}
+    .drop:hover{border-color:#79c0ff}
+    .drop input{max-width:100%;font-size:12px;color:var(--muted);margin-top:8px}
+    .file-name{color:#7ee787;font-size:12px;overflow-wrap:anywhere;margin-top:7px}
+    .notice{background:#1c2128;border:1px solid var(--border);border-radius:10px;padding:12px;color:var(--muted);font-size:12px;margin-top:14px}
+    .notice strong{color:var(--text)}
+    .side-section{padding:17px 18px;border-bottom:1px solid var(--border)}
+    .side-section:last-child{border-bottom:0}
+    .side-title{font-weight:700;font-size:13px;margin-bottom:10px}
+    .status{display:flex;align-items:center;gap:8px;color:#e3b341;font-size:12px}
+    .dot{width:8px;height:8px;background:#e3b341;border-radius:50%}
+    .preview{border:1px solid var(--border);background:#0d1117;border-radius:12px;padding:15px;margin-top:15px}
+    .wave{height:38px;display:flex;gap:4px;align-items:center;justify-content:center;margin:10px 0}
+    .wave span{width:4px;border-radius:5px;background:linear-gradient(#79c0ff,#8957e5);height:var(--h);opacity:.8}
+    audio{width:100%;margin-top:8px}
+    .steps{padding:0;margin:0;list-style:none;display:grid;gap:13px}
+    .steps li{display:flex;gap:10px;color:var(--muted);font-size:12px}
+    .num{flex:0 0 23px;height:23px;border:1px solid var(--border);border-radius:7px;display:grid;place-items:center;color:#79c0ff;font-weight:750}
+    .steps b{color:var(--text);display:block;font-size:13px;margin-bottom:2px}
+    footer{border-top:1px solid var(--border);color:var(--muted);font-size:12px;text-align:center;padding:22px 15px}
+    .toast{display:none;margin-top:12px;border:1px solid #9e6a03;background:#2b2110;color:#f2cc60;border-radius:9px;padding:10px 12px;font-size:12px}
+    .toast.show{display:block}
+    @media(max-width:760px){.topbar{height:58px}.layout{grid-template-columns:1fr}main{margin-top:26px}.hero p{font-size:14px}.panelbody{padding:16px}.side-panel{display:grid;grid-template-columns:1fr 1fr}.side-section{border-right:1px solid var(--border)}}
+    @media(max-width:440px){.side-panel{display:block}.side-section{border-right:0}.actions .btn{flex:1}.topbar .pill{display:none}}
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand"><span class="logo" aria-hidden="true">♫</span><span>Voice Studio</span></div>
+    <span class="pill">GitHub Pages ready · Prototype</span>
+  </header>
+  <main>
+    <section class="hero">
+      <div class="eyebrow">Your voice playground</div>
+      <h1>Give your words a <span class="gradient">voice.</span></h1>
+      <p>Draft what you want to say, add a voice sample, and preview the workflow. This starter page is ready to host on GitHub Pages.</p>
+    </section>
+    <div class="layout">
+      <section class="panel">
+        <div class="panelhead"><h2>✦ Create speech</h2><span class="pill">Workspace</span></div>
+        <div class="panelbody">
+          <label for="voiceFile">Voice sample <span class="hint">· optional for this demo</span></label>
+          <label class="drop" for="voiceFile">
+            <div style="font-size:25px">🎙️</div>
+            <div><strong>Choose a voice recording</strong></div>
+            <div class="hint">Audio file · MP3, WAV, OGG, M4A</div>
+            <input id="voiceFile" type="file" accept="audio/*">
+            <div id="fileName" class="file-name"></div>
+          </label>
+          <div style="height:20px"></div>
+          <label for="script">Text to speak <span class="hint">· type anything</span></label>
+          <textarea id="script" maxlength="3000" placeholder="Type something for the voice to say…">Hey! This is a preview of my voice studio. Once a voice engine is connected, this text can be turned into speech.</textarea>
+          <div class="row"><span class="hint">Tip: punctuation helps speech sound more natural.</span><span class="counter" id="counter">0 / 3000</span></div>
+          <div class="actions">
+            <button class="btn primary" id="generate">▶ Generate preview</button>
+            <button class="btn" id="clear">Clear text</button>
+          </div>
+          <div class="toast" id="toast" role="status"></div>
+          <div class="preview">
+            <div style="display:flex;justify-content:space-between;align-items:center;gap:10px">
+              <strong style="font-size:13px">Audio preview</strong><span class="pill" id="audioStatus">Waiting for input</span>
+            </div>
+            <div class="wave" aria-hidden="true" id="wave"></div>
+            <div class="hint" id="previewText">Your generated audio will appear here.</div>
+            <audio id="audio" controls hidden></audio>
+            <div class="actions" style="margin-top:12px"><a class="btn" id="download" download="voice-preview.wav" hidden>↓ Download audio</a><button class="btn" id="testVoice">Test browser voice</button></div>
+          </div>
+          <div class="notice"><strong>Prototype note:</strong> The “Generate preview” button shows where a voice-cloning service connects. It does not clone a voice yet. “Test browser voice” uses your device’s built-in speech synthesis, not the uploaded person’s voice.</div>
+        </div>
+      </section>
+      <aside class="panel side-panel">
+        <div class="side-section">
+          <div class="side-title">Voice engine</div>
+          <div class="status"><span class="dot"></span><span>Not connected</span></div>
+          <p class="hint">A compatible text-to-speech or voice-cloning API is needed for cloned audio.</p>
+        </div>
+        <div class="side-section">
+          <div class="side-title">Quick guide</div>
+          <ol class="steps">
+            <li><span class="num">1</span><div><b>Add a sample</b>Choose a clean recording with permission.</div></li>
+            <li><span class="num">2</span><div><b>Write your text</b>Use the box to enter the words.</div></li>
+            <li><span class="num">3</span><div><b>Connect an engine</b>Wire a secure backend to generate cloned speech.</div></li>
+          </ol>
+        </div>
+        <div class="side-section">
+          <div class="side-title">Privacy reminder</div>
+          <p class="hint">This static demo does not upload the recording anywhere. Avoid placing secret API keys in a public GitHub repository.</p>
+        </div>
+      </aside>
+    </div>
+  </main>
+  <footer>Voice Studio · Static website starter · Hosted with GitHub Pages</footer>
+  <script>
+    const scriptBox = document.getElementById('script');
+    const counter = document.getElementById('counter');
+    const fileInput = document.getElementById('voiceFile');
+    const fileName = document.getElementById('fileName');
+    const toast = document.getElementById('toast');
+    const audio = document.getElementById('audio');
+    const audioStatus = document.getElementById('audioStatus');
+    const previewText = document.getElementById('previewText');
+    const download = document.getElementById('download');
+    const wave = document.getElementById('wave');
+    let localAudioUrl = null;
+
+    for (let i=0;i< thirtyFive();i++) {
+      const bar = document.createElement('span');
+      bar.style.setProperty('--h', (8 + Math.abs(Math.sin(i*1.7))*28) + 'px');
+      wave.appendChild(bar);
+    }
+    function thirtyFive(){ return 35; }
+    function updateCounter(){ counter.textContent = `${scriptBox.value.length} / 3000`; }
+    function showToast(message){ toast.textContent=message; toast.classList.add('show'); }
+    function hideToast(){ toast.classList.remove('show'); }
+    scriptBox.addEventListener('input', updateCounter);
+    updateCounter();
+    fileInput.addEventListener('change', () => {
+      const f=fileInput.files && fileInput.files[0];
+      fileName.textContent=f ? `${f.name} · ${(f.size/1024/1024).toFixed(2)} MB (kept in this browser)` : '';
+      hideToast();
+    });
+    document.getElementById('clear').addEventListener('click', () => {
+      scriptBox.value=''; updateCounter(); hideToast(); scriptBox.focus();
+    });
+    document.getElementById('generate').addEventListener('click', () => {
+      if (!scriptBox.value.trim()) { showToast('Type some text first.'); return; }
+      showToast('Voice cloning is not connected yet. Use “Test browser voice” to hear a basic device voice, or connect a backend/API to enable cloning.');
+      audioStatus.textContent='Engine not connected';
+    });
+    document.getElementById('testVoice').addEventListener('click', () => {
+      const text=scriptBox.value.trim();
+      if (!text) { showToast('Type something to speak first.'); return; }
+      if (!('speechSynthesis' in window) || !('SpeechSynthesisUtterance' in window)) {
+        showToast('This browser does not support built-in speech synthesis. Try a recent Chrome browser.');
+        return;
+      }
+      window.speechSynthesis.cancel();
+      const utterance=new SpeechSynthesisUtterance(text);
+      utterance.rate=1; utterance.pitch=1; utterance.volume=1;
+      utterance.onstart=()=>{ audioStatus.textContent='Browser voice playing'; previewText.textContent='Playing with a built-in device voice (not the uploaded voice).'; hideToast(); };
+      utterance.onend=()=>{ audioStatus.textContent='Preview finished'; };
+      utterance.onerror=()=>{ audioStatus.textContent='Preview unavailable'; showToast('The browser could not play speech.'); };
+      window.speechSynthesis.speak(utterance);
+    });
+    window.addEventListener('beforeunload', () => {
+      window.speechSynthesis?.cancel();
+      if(localAudioUrl) URL.revokeObjectURL(localAudioUrl);
+    });
+  </script>
+</body>
+</html>
