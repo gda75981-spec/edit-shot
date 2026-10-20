@@ -1,190 +1,90 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#0d1117">
-  <title>Voice Studio — Voice Playground</title>
-  <style>
-    :root{color-scheme:dark;--bg:#0d1117;--panel:#161b22;--panel2:#0f141b;--border:#30363d;--text:#e6edf3;--muted:#9198a1;--blue:#2f81f7;--green:#238636;--purple:#8957e5}
-    *{box-sizing:border-box}
-    body{margin:0;background:radial-gradient(ellipse at top,#17233b 0,#0d1117 48rem);font:15px/1.5 system-ui,-apple-system,Segoe UI,Roboto,sans-serif;color:var(--text);min-height:100vh}
-    .topbar{height:64px;border-bottom:1px solid var(--border);background:#0d1117eF;display:flex;align-items:center;justify-content:space-between;padding:0 max(18px,calc((100vw - 1050px)/2));gap:12px;position:sticky;top:0;z-index:5;backdrop-filter:blur(12px)}
-    .brand{display:flex;align-items:center;gap:10px;font-weight:750;letter-spacing:-.3px}
-    .logo{width:34px;height:34px;border-radius:10px;background:linear-gradient(135deg,#58a6ff,#8957e5);display:grid;place-items:center;box-shadow:0 5px 18px #8957e533}
-    .pill{border:1px solid var(--border);border-radius:999px;color:var(--muted);padding:5px 10px;font-size:12px}
-    main{width:min(100% - 32px,1000px);margin:38px auto 70px}
-    .hero{text-align:center;margin:0 auto 30px;max-width:700px}
-    .eyebrow{color:#79c0ff;text-transform:uppercase;font-size:11px;letter-spacing:2px;font-weight:750}
-    h1{font-size:clamp(32px,6vw,52px);line-height:1.08;letter-spacing:-1.8px;margin:12px 0}
-    .gradient{background:linear-gradient(90deg,#79c0ff,#d2a8ff);-webkit-background-clip:text;background-clip:text;color:transparent}
-    .hero p{color:var(--muted);font-size:16px;margin:0 auto;max-width:590px}
-    .layout{display:grid;grid-template-columns:1fr 300px;gap:18px;align-items:start}
-    .panel{background:linear-gradient(180deg,#161b22,#11161d);border:1px solid var(--border);border-radius:16px;overflow:hidden;box-shadow:0 12px 36px #0002}
-    .panelhead{padding:17px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:10px}
-    .panelhead h2{font-size:15px;margin:0;font-weight:700}
-    .panelbody{padding:20px}
-    label{display:block;font-weight:650;font-size:13px;margin-bottom:8px}
-    .hint{color:var(--muted);font-size:12px;font-weight:400}
-    textarea,input[type=text]{width:100%;background:#0d1117;border:1px solid var(--border);border-radius:10px;color:var(--text);padding:13px 14px;font:inherit;outline:none}
-    textarea{resize:vertical;min-height:170px}
-    textarea:focus,input:focus{border-color:var(--blue);box-shadow:0 0 0 3px #2f81f733}
-    .row{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:10px 0 16px}
-    .counter{color:var(--muted);font-size:12px}
-    .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:1px solid var(--border);border-radius:9px;padding:10px 14px;color:var(--text);background:#21262d;font:650 13px system-ui;cursor:pointer;text-decoration:none;transition:transform .12s,border-color .12s}
-    .btn:hover{border-color:#6e7681;transform:translateY(-1px)}
-    .btn.primary{background:var(--green);border-color:#2ea043;color:white}
-    .btn.blue{background:#1f6feb;border-color:#388bfd;color:white}
-    .btn:disabled{opacity:.45;cursor:not-allowed;transform:none}
-    .actions{display:flex;gap:10px;flex-wrap:wrap}
-    .drop{display:block;border:1px dashed #484f58;border-radius:12px;padding:16px;background:#0d1117;text-align:center;cursor:pointer}
-    .drop:hover{border-color:#79c0ff}
-    .drop input{max-width:100%;font-size:12px;color:var(--muted);margin-top:8px}
-    .file-name{color:#7ee787;font-size:12px;overflow-wrap:anywhere;margin-top:7px}
-    .notice{background:#1c2128;border:1px solid var(--border);border-radius:10px;padding:12px;color:var(--muted);font-size:12px;margin-top:14px}
-    .notice strong{color:var(--text)}
-    .side-section{padding:17px 18px;border-bottom:1px solid var(--border)}
-    .side-section:last-child{border-bottom:0}
-    .side-title{font-weight:700;font-size:13px;margin-bottom:10px}
-    .status{display:flex;align-items:center;gap:8px;color:#e3b341;font-size:12px}
-    .dot{width:8px;height:8px;background:#e3b341;border-radius:50%}
-    .preview{border:1px solid var(--border);background:#0d1117;border-radius:12px;padding:15px;margin-top:15px}
-    .wave{height:38px;display:flex;gap:4px;align-items:center;justify-content:center;margin:10px 0}
-    .wave span{width:4px;border-radius:5px;background:linear-gradient(#79c0ff,#8957e5);height:var(--h);opacity:.8}
-    audio{width:100%;margin-top:8px}
-    .steps{padding:0;margin:0;list-style:none;display:grid;gap:13px}
-    .steps li{display:flex;gap:10px;color:var(--muted);font-size:12px}
-    .num{flex:0 0 23px;height:23px;border:1px solid var(--border);border-radius:7px;display:grid;place-items:center;color:#79c0ff;font-weight:750}
-    .steps b{color:var(--text);display:block;font-size:13px;margin-bottom:2px}
-    footer{border-top:1px solid var(--border);color:var(--muted);font-size:12px;text-align:center;padding:22px 15px}
-    .toast{display:none;margin-top:12px;border:1px solid #9e6a03;background:#2b2110;color:#f2cc60;border-radius:9px;padding:10px 12px;font-size:12px}
-    .toast.show{display:block}
-    @media(max-width:760px){.topbar{height:58px}.layout{grid-template-columns:1fr}main{margin-top:26px}.hero p{font-size:14px}.panelbody{padding:16px}.side-panel{display:grid;grid-template-columns:1fr 1fr}.side-section{border-right:1px solid var(--border)}}
-    @media(max-width:440px){.side-panel{display:block}.side-section{border-right:0}.actions .btn{flex:1}.topbar .pill{display:none}}
-  </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Chat Screenshot Editor</title>
+<style>
+:root{color-scheme:dark;--bg:#101116;--panel:#1b1d25;--line:#343744;--accent:#7c8cff;--text:#f4f5fa;--muted:#a6a9b8}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:15px/1.45 system-ui,-apple-system,Segoe UI,sans-serif}
+header{padding:22px 18px 14px;max-width:1200px;margin:auto}h1{font-size:clamp(23px,4vw,32px);margin:0 0 5px}header p{color:var(--muted);margin:0}
+main{max-width:1200px;margin:auto;padding:12px 16px 32px;display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:16px}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:15px;min-width:0}.preview-panel{display:flex;flex-direction:column;gap:12px}
+.toolbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center}button,.upload-label{border:1px solid var(--line);background:#292c38;color:var(--text);border-radius:9px;padding:10px 12px;font:inherit;cursor:pointer}button.primary{background:var(--accent);border-color:var(--accent);color:#10121c;font-weight:700}button:hover,.upload-label:hover{filter:brightness(1.12)}input[type=file]{display:none}
+.canvas-wrap{background:#08090c;border:1px dashed #454958;border-radius:10px;min-height:250px;display:flex;align-items:center;justify-content:center;overflow:hidden;position:relative}
+canvas{display:block;max-width:100%;max-height:70vh;width:auto;height:auto;touch-action:none}
+.empty{padding:40px 20px;text-align:center;color:var(--muted)}.empty strong{display:block;color:var(--text);font-size:18px;margin-bottom:7px}
+h2{font-size:17px;margin:0 0 12px}.field{margin-bottom:13px}.field label{display:block;font-size:13px;color:var(--muted);margin-bottom:6px}
+input[type=text],textarea,select{width:100%;background:#111319;color:var(--text);border:1px solid var(--line);border-radius:8px;padding:10px;font:inherit}textarea{resize:vertical;min-height:76px}
+input[type=range]{width:100%;accent-color:var(--accent)}.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}.hint{font-size:12px;color:var(--muted);margin:7px 0 0}.divider{height:1px;background:var(--line);margin:15px 0}
+.status{font-size:12px;color:var(--muted)}.pill{display:inline-block;border-radius:20px;background:#292c38;padding:4px 8px;font-size:12px;color:#cdd0ff}
+@media(max-width:850px){main{grid-template-columns:1fr}canvas{max-height:55vh}.editor{order:0}.preview-panel{order:1}}
+</style>
 </head>
 <body>
-  <header class="topbar">
-    <div class="brand"><span class="logo" aria-hidden="true">♫</span><span>Voice Studio</span></div>
-    <span class="pill">GitHub Pages ready · Prototype</span>
-  </header>
-  <main>
-    <section class="hero">
-      <div class="eyebrow">Your voice playground</div>
-      <h1>Give your words a <span class="gradient">voice.</span></h1>
-      <p>Draft what you want to say, add a voice sample, and preview the workflow. This starter page is ready to host on GitHub Pages.</p>
-    </section>
-    <div class="layout">
-      <section class="panel">
-        <div class="panelhead"><h2>✦ Create speech</h2><span class="pill">Workspace</span></div>
-        <div class="panelbody">
-          <label for="voiceFile">Voice sample <span class="hint">· optional for this demo</span></label>
-          <label class="drop" for="voiceFile">
-            <div style="font-size:25px">🎙️</div>
-            <div><strong>Choose a voice recording</strong></div>
-            <div class="hint">Audio file · MP3, WAV, OGG, M4A</div>
-            <input id="voiceFile" type="file" accept="audio/*">
-            <div id="fileName" class="file-name"></div>
-          </label>
-          <div style="height:20px"></div>
-          <label for="script">Text to speak <span class="hint">· type anything</span></label>
-          <textarea id="script" maxlength="3000" placeholder="Type something for the voice to say…">Hey! This is a preview of my voice studio. Once a voice engine is connected, this text can be turned into speech.</textarea>
-          <div class="row"><span class="hint">Tip: punctuation helps speech sound more natural.</span><span class="counter" id="counter">0 / 3000</span></div>
-          <div class="actions">
-            <button class="btn primary" id="generate">▶ Generate preview</button>
-            <button class="btn" id="clear">Clear text</button>
-          </div>
-          <div class="toast" id="toast" role="status"></div>
-          <div class="preview">
-            <div style="display:flex;justify-content:space-between;align-items:center;gap:10px">
-              <strong style="font-size:13px">Audio preview</strong><span class="pill" id="audioStatus">Waiting for input</span>
-            </div>
-            <div class="wave" aria-hidden="true" id="wave"></div>
-            <div class="hint" id="previewText">Your generated audio will appear here.</div>
-            <audio id="audio" controls hidden></audio>
-            <div class="actions" style="margin-top:12px"><a class="btn" id="download" download="voice-preview.wav" hidden>↓ Download audio</a><button class="btn" id="testVoice">Test browser voice</button></div>
-          </div>
-          <div class="notice"><strong>Prototype note:</strong> The “Generate preview” button shows where a voice-cloning service connects. It does not clone a voice yet. “Test browser voice” uses your device’s built-in speech synthesis, not the uploaded person’s voice.</div>
-        </div>
-      </section>
-      <aside class="panel side-panel">
-        <div class="side-section">
-          <div class="side-title">Voice engine</div>
-          <div class="status"><span class="dot"></span><span>Not connected</span></div>
-          <p class="hint">A compatible text-to-speech or voice-cloning API is needed for cloned audio.</p>
-        </div>
-        <div class="side-section">
-          <div class="side-title">Quick guide</div>
-          <ol class="steps">
-            <li><span class="num">1</span><div><b>Add a sample</b>Choose a clean recording with permission.</div></li>
-            <li><span class="num">2</span><div><b>Write your text</b>Use the box to enter the words.</div></li>
-            <li><span class="num">3</span><div><b>Connect an engine</b>Wire a secure backend to generate cloned speech.</div></li>
-          </ol>
-        </div>
-        <div class="side-section">
-          <div class="side-title">Privacy reminder</div>
-          <p class="hint">This static demo does not upload the recording anywhere. Avoid placing secret API keys in a public GitHub repository.</p>
-        </div>
-      </aside>
-    </div>
-  </main>
-  <footer>Voice Studio · Static website starter · Hosted with GitHub Pages</footer>
-  <script>
-    const scriptBox = document.getElementById('script');
-    const counter = document.getElementById('counter');
-    const fileInput = document.getElementById('voiceFile');
-    const fileName = document.getElementById('fileName');
-    const toast = document.getElementById('toast');
-    const audio = document.getElementById('audio');
-    const audioStatus = document.getElementById('audioStatus');
-    const previewText = document.getElementById('previewText');
-    const download = document.getElementById('download');
-    const wave = document.getElementById('wave');
-    let localAudioUrl = null;
-
-    for (let i=0;i< thirtyFive();i++) {
-      const bar = document.createElement('span');
-      bar.style.setProperty('--h', (8 + Math.abs(Math.sin(i*1.7))*28) + 'px');
-      wave.appendChild(bar);
-    }
-    function thirtyFive(){ return 35; }
-    function updateCounter(){ counter.textContent = `${scriptBox.value.length} / 3000`; }
-    function showToast(message){ toast.textContent=message; toast.classList.add('show'); }
-    function hideToast(){ toast.classList.remove('show'); }
-    scriptBox.addEventListener('input', updateCounter);
-    updateCounter();
-    fileInput.addEventListener('change', () => {
-      const f=fileInput.files && fileInput.files[0];
-      fileName.textContent=f ? `${f.name} · ${(f.size/1024/1024).toFixed(2)} MB (kept in this browser)` : '';
-      hideToast();
-    });
-    document.getElementById('clear').addEventListener('click', () => {
-      scriptBox.value=''; updateCounter(); hideToast(); scriptBox.focus();
-    });
-    document.getElementById('generate').addEventListener('click', () => {
-      if (!scriptBox.value.trim()) { showToast('Type some text first.'); return; }
-      showToast('Voice cloning is not connected yet. Use “Test browser voice” to hear a basic device voice, or connect a backend/API to enable cloning.');
-      audioStatus.textContent='Engine not connected';
-    });
-    document.getElementById('testVoice').addEventListener('click', () => {
-      const text=scriptBox.value.trim();
-      if (!text) { showToast('Type something to speak first.'); return; }
-      if (!('speechSynthesis' in window) || !('SpeechSynthesisUtterance' in window)) {
-        showToast('This browser does not support built-in speech synthesis. Try a recent Chrome browser.');
-        return;
-      }
-      window.speechSynthesis.cancel();
-      const utterance=new SpeechSynthesisUtterance(text);
-      utterance.rate=1; utterance.pitch=1; utterance.volume=1;
-      utterance.onstart=()=>{ audioStatus.textContent='Browser voice playing'; previewText.textContent='Playing with a built-in device voice (not the uploaded voice).'; hideToast(); };
-      utterance.onend=()=>{ audioStatus.textContent='Preview finished'; };
-      utterance.onerror=()=>{ audioStatus.textContent='Preview unavailable'; showToast('The browser could not play speech.'); };
-      window.speechSynthesis.speak(utterance);
-    });
-    window.addEventListener('beforeunload', () => {
-      window.speechSynthesis?.cancel();
-      if(localAudioUrl) URL.revokeObjectURL(localAudioUrl);
-    });
-  </script>
+<header><h1>Chat Screenshot Editor</h1><p>Upload a screenshot, replace two message lines, then export your edited image.</p></header>
+<main>
+<section class="panel preview-panel">
+  <div class="toolbar">
+    <label class="upload-label" for="file">📷 Upload screenshot</label><input id="file" type="file" accept="image/*">
+    <button id="reset">Reset edits</button><button id="download" class="primary">Export PNG</button>
+  </div>
+  <div class="canvas-wrap" id="canvasWrap"><div class="empty" id="empty"><strong>Your screenshot appears here</strong>Choose an image to get started.</div><canvas id="canvas" hidden></canvas></div>
+  <div class="status" id="status">Tip: drag either cover box on the preview to place it over the old message text.</div>
+</section>
+<aside class="panel editor">
+  <h2>Message 1 <span class="pill">top message</span></h2>
+  <div class="field"><label for="msg1">Replacement text</label><textarea id="msg1" placeholder="Type the first replacement message…">Wha that</textarea></div>
+  <div class="row">
+    <div class="field"><label for="cover1">Cover color</label><input id="cover1" type="color" value="#000000" style="width:100%;height:40px"></div>
+    <div class="field"><label for="font1">Font size</label><input id="font1" type="range" min="12" max="64" value="25"><div class="hint" id="font1v">25 px</div></div>
+  </div>
+  <div class="divider"></div>
+  <h2>Message 2 <span class="pill">bottom message</span></h2>
+  <div class="field"><label for="msg2">Replacement text</label><textarea id="msg2" placeholder="Type the second replacement message…">I gotta tell you something... Im gay...</textarea></div>
+  <div class="row">
+    <div class="field"><label for="cover2">Cover color</label><input id="cover2" type="color" value="#000000" style="width:100%;height:40px"></div>
+    <div class="field"><label for="font2">Font size</label><input id="font2" type="range" min="12" max="64" value="25"><div class="hint" id="font2v">25 px</div></div>
+  </div>
+  <div class="divider"></div>
+  <h2>Text style</h2>
+  <div class="row">
+    <div class="field"><label for="textColor">Text color</label><input id="textColor" type="color" value="#f2f3f5" style="width:100%;height:40px"></div>
+    <div class="field"><label for="fontFamily">Font</label><select id="fontFamily"><option value="Arial, sans-serif">Arial / chat-like</option><option value="system-ui, sans-serif">System UI</option><option value="Georgia, serif">Georgia</option><option value="monospace">Monospace</option></select></div>
+  </div>
+  <p class="hint">Move the cover boxes on the image. Drag inside a box to move it; use the corner handle to resize it. The app works locally in your browser—your image isn't uploaded to a server.</p>
+</aside>
+</main>
+<script>
+const $=id=>document.getElementById(id), canvas=$('canvas'),ctx=canvas.getContext('2d');
+let image=null, boxes=[], selected=-1, dragging=null, start=null, original=null;
+function initBoxes(){
+ const w=canvas.width,h=canvas.height;
+ boxes=[
+  {x:w*.065,y:h*.40,w:w*.46,h:h*.105,cover:$('cover1').value,font:+$('font1').value,text:$('msg1').value},
+  {x:w*.065,y:h*.78,w:w*.69,h:h*.12,cover:$('cover2').value,font:+$('font2').value,text:$('msg2').value}
+ ];
+}
+function updateText(){if(!image)return;boxes[0].text=$('msg1').value;boxes[1].text=$('msg2').value;boxes[0].cover=$('cover1').value;boxes[1].cover=$('cover2').value;boxes[0].font=+$('font1').value;boxes[1].font=+$('font2').value;draw();}
+function draw(){
+ if(!image)return;ctx.clearRect(0,0,canvas.width,canvas.height);ctx.drawImage(image,0,0);
+ boxes.forEach((b,i)=>{
+  ctx.fillStyle=b.cover;ctx.fillRect(b.x,b.y,b.w,b.h);
+  ctx.fillStyle=$('textColor').value;ctx.font=`${b.font}px ${$('fontFamily').value}`;ctx.textBaseline='middle';
+  const lines=wrapText(b.text,b.w-12);const lineH=b.font*1.22;let y=b.y+b.h/2-(lines.length-1)*lineH/2;
+  lines.forEach((line,j)=>ctx.fillText(line,b.x+6,y+j*lineH,Math.max(1,b.w-12)));
+  if(selected===i){ctx.strokeStyle='#8b9aff';ctx.lineWidth=Math.max(2,canvas.width/500);ctx.strokeRect(b.x,b.y,b.w,b.h);const s=Math.max(9,canvas.width/80);ctx.fillStyle='#8b9aff';ctx.fillRect(b.x+b.w-s,b.y+b.h-s,s,s);}
+ });
+}
+function wrapText(text,maxWidth){let out=[];String(text).split('\n').forEach(part=>{let words=part.split(/\s+/),line='';words.forEach(word=>{let test=line?line+' '+word:word;if(ctx.measureText(test).width>maxWidth&&line){out.push(line);line=word}else line=test});out.push(line)});return out.length?out:[''];}
+$('file').addEventListener('change',e=>{const f=e.target.files[0];if(!f)return;const url=URL.createObjectURL(f);const im=new Image();im.onload=()=>{image=im;canvas.width=im.naturalWidth;canvas.height=im.naturalHeight;canvas.hidden=false;$('empty').hidden=true;original={width:canvas.width,height:canvas.height};initBoxes();selected=-1;draw();$('status').textContent=`Loaded ${f.name} · ${canvas.width} × ${canvas.height}px`;URL.revokeObjectURL(url)};im.onerror=()=>{$('status').textContent='Could not open that image. Try a PNG or JPG.'};im.src=url;});
+['msg1','msg2','cover1','cover2','font1','font2','textColor','fontFamily'].forEach(id=>$(id).addEventListener('input',()=>{if(id==='font1')$('font1v').textContent=$('font1').value+' px';if(id==='font2')$('font2v').textContent=$('font2').value+' px';updateText()}));
+$('reset').addEventListener('click',()=>{if(!image)return;initBoxes();draw();$('status').textContent='Boxes reset to their starting positions.'});
+$('download').addEventListener('click',()=>{if(!image){$('status').textContent='Upload a screenshot first.';return}selected=-1;draw();const a=document.createElement('a');a.download='edited-chat.png';a.href=canvas.toDataURL('image/png');a.click();});
+function coords(e){const r=canvas.getBoundingClientRect();return{x:(e.clientX-r.left)*canvas.width/r.width,y:(e.clientY-r.top)*canvas.height/r.height}}
+canvas.addEventListener('pointerdown',e=>{if(!image)return;const p=coords(e);for(let i=boxes.length-1;i>=0;i--){const b=boxes[i],handle=Math.max(10,canvas.width/80);if(p.x>=b.x&&p.x<=b.x+b.w&&p.y>=b.y&&p.y<=b.y+b.h){selected=i;dragging=(p.x>b.x+b.w-handle&&p.y>b.y+b.h-handle)?'resize':'move';start={x:p.x,y:p.y,bx:b.x,by:b.y,bw:b.w,bh:b.h};canvas.setPointerCapture(e.pointerId);draw();return}}selected=-1;draw()});
+canvas.addEventListener('pointermove',e=>{if(!dragging||selected<0)return;const p=coords(e),b=boxes[selected];if(dragging==='move'){b.x=Math.max(0,Math.min(canvas.width-b.w,start.bx+p.x-start.x));b.y=Math.max(0,Math.min(canvas.height-b.h,start.by+p.y-start.y))}else{b.w=Math.max(50,Math.min(canvas.width-b.x,start.bw+p.x-start.x));b.h=Math.max(28,Math.min(canvas.height-b.y,start.bh+p.y-start.y))}draw()});
+['pointerup','pointercancel','lostpointercapture'].forEach(ev=>canvas.addEventListener(ev,()=>{dragging=null;start=null}));
+</script>
 </body>
 </html>
